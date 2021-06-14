@@ -5,8 +5,9 @@ import AddContactForm from './AddContactForm';
 import CreateChatForm from './CreateChatForm';
 import Col from 'react-bootstrap/Col';
 import PersonPlus from '../../Assets/person-plus.svg';
-import ChatIcon from '../../Assets/chat-icon.svg';
+import CreateChatIcon from '../../Assets/chat-icon.svg';
 import { ChatList } from 'react-chat-elements';
+import ChatIcon from '../../Assets/chat-left-dots.svg';
 
 class SidePanel extends Component {
   state = {};
@@ -33,13 +34,13 @@ class SidePanel extends Component {
               ></CreateChatForm>
             }
           >
-						<img src={ChatIcon} /> 
+						<img src={CreateChatIcon} /> 
           </ModalShownOnButtonClick>
         </Row>
         <Row>
           <Col>
             <ChatList 
-              dataSource={this.props.chats}
+              dataSource={this.props.chats.map(chat => ({ ...chat, avatar: ChatIcon}))}
               onClick={this.props.onChatClicked}
             />
           </Col>

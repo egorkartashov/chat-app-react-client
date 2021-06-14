@@ -1,6 +1,7 @@
 import React from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { ChatItem } from 'react-chat-elements';
+import ChatIcon from '../../Assets/chat-left-dots.svg';
 
 class ChatsList extends React.Component {
 
@@ -25,7 +26,6 @@ class ChatsList extends React.Component {
 					<ChatItem
 						title={value.name}
 						subtitle={value.lastMessage}
-						
 					>
 
 					</ChatItem>

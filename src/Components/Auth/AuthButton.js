@@ -42,7 +42,7 @@ function AuthButton() {
 		return (
 			<GoogleLogout
 				clientId={GOOGLE_CLIENT_ID}
-				buttonText="Logout"
+				buttonText={`Выйти: ${AuthService.getUserInfo().email}`}
 				onLogoutSuccess={logout} />
 		);
 	}
@@ -50,7 +50,7 @@ function AuthButton() {
 		return (
 			<GoogleLogin
 				clientId={GOOGLE_CLIENT_ID}
-				buttonText="Login"
+				buttonText="Войти через Google"
 				onSuccess={handleSuccess}
 				onFailure={handleFailure}
 				cookiePolicy={'single_host_origin'}

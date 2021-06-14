@@ -26,14 +26,24 @@ class Home extends React.Component {
     this.handleCreateChat = this.handleCreateChat.bind(this);
     this.handleOnChatClicked = this.handleOnChatClicked.bind(this);
     this.fetchChats = this.fetchChats.bind(this);
+    this.handleNewMessageReceived = this.handleNewMessageReceived.bind(this);
   }
 
   componentDidMount() {
     let serverConnection = this.state.serverConnection;
     serverConnection.connect().then(() => {
       console.log("Connected!");
+      serverConnection.setOnNewMessageReceived(this.handleNewMessageReceived);
       this.fetchChats();
     });
+  }
+
+  handleNewMessageReceived(chatId, message) {
+    this.fetchChats();
+    if (this.state.selectedChatId === chatId) {
+      this.setState({selectedChatId: undefined});
+      this.setState({selectedChatId: chatId});
+    }
   }
 
   handleAddContact(user, message) {
@@ -56,7 +66,6 @@ class Home extends React.Component {
   }
 
   handleOnChatClicked(chat) {
-    console.log(`handleOnChatClicked: ${JSON.stringify(chat)}`);
     this.setState({selectedChatId: chat.id});
   }
 

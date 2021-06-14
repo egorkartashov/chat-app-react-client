@@ -6,7 +6,12 @@ export class ServerConnection {
 	constructor(serverUrl) {
 		this.serverUrl = serverUrl;
     this.connected = false;
+    this.onNewMessageReceived = (chatId, message) => {};
 	}
+
+  setOnNewMessageReceived(onNewMessageReceived) {
+    this.onNewMessageReceived = onNewMessageReceived;
+  }
 
   isConnected() {
     return this.connection !== undefined && this.connection.connected;
@@ -33,6 +38,12 @@ export class ServerConnection {
 
     connection.on("NotifyMessageReceivedAsync", (message) => { 
       console.log("Server received message and responded: " + message);
+    });
+
+    connection.on("NotifyNewMessagePostedAsync", (chatId, message) => { 
+      console.log(`New message notification received: chatId = ${chatId}, message = ${JSON.stringify(message)}`);
+      if (this.onNewMessageReceived !== null)
+        this.onNewMessageReceived(chatId, message);
     });
 
     connection.onreconnected(() => {
@@ -74,6 +85,7 @@ export class ServerConnection {
         position: message.senderEmail === userInfo.email ? 'right' : 'left',
         text: message.text,
         date: Date.parse(message.sentTimeUtc),
+        title: message.senderName,
       }
     });
   }

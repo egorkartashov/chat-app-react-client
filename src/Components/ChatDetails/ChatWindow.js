@@ -20,6 +20,8 @@ class ChatWindow extends React.Component {
 		this.fetchMessages = this.fetchMessages.bind(this);
 		this.handleOnChange = this.handleOnChange.bind(this);
 		this.handleSendMessage = this.handleSendMessage.bind(this);
+
+		this.inputMessage = React.createRef();
 	}
 
 	componentDidUpdate(prevProps) {
@@ -47,6 +49,7 @@ class ChatWindow extends React.Component {
 				</div>
 				<div className="message-input-container">
 					<Input
+						ref={this.inputMessage}
 						placeholder="New message..."
 						onChange={this.handleOnChange}
 						rightButtons={
@@ -81,6 +84,7 @@ class ChatWindow extends React.Component {
 			.then(_ => {
 				console.log(`ChatWindow: Sent message ${this.state.inputMessage} to chat ${selectedChatId}`);
 				this.setState({inputMessage: ""});
+				this.inputMessage.current.clear();
 				this.fetchMessages();
 			})
 			.catch(error => console.log(`ChatWindow: Error while sending message to chat: ${error}`));
