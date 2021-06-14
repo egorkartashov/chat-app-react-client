@@ -1,8 +1,14 @@
+import Card from 'react-bootstrap/Card';
+
 function ChatListItem(props) {
-	return <div>
-		<h4>{props.name}</h4>
-		<h5>{props.lastMessage}</h5>
-	</div>
+	return (
+	<Card>
+		<Card.Body>
+			<Card.Title>{props.name}</Card.Title>
+			<Card.Subtitle className="mb-2 text-muted">{props.lastMessage}</Card.Subtitle>
+		</Card.Body>
+	</Card>
+	);
 }
 
 export default ChatListItem;

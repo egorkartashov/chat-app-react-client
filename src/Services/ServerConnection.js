@@ -1,16 +1,19 @@
 import * as signalR from '@microsoft/signalr';
-import { AuthService } from './AuthService';
+import AuthService from './AuthService';
 import React from 'react';
 
 export class ServerConnection {
 	constructor(serverUrl) {
 		this.serverUrl = serverUrl;
-		this.authService = new AuthService();
     this.connected = false;
 	}
 
-	connect() {
-		const accessToken = this.authService.getAccessToken();
+  isConnected() {
+    return this.connection !== undefined && this.connection.connected;
+  }
+
+	async connect() {
+		const accessToken = AuthService.getAccessToken();
     if (accessToken === "") {
       console.log("Access token not found");
       return;
@@ -25,31 +28,48 @@ export class ServerConnection {
     }
 
     let connection  = new signalR.HubConnectionBuilder()
-      .withUrl(`${this.serverUrl}/signalr`, options)
+      .withUrl(`${this.serverUrl}/chatshub`, options)
       .build();
 
-    connection.on("NotifyMessageReceived", (message) => { 
+    connection.on("NotifyMessageReceivedAsync", (message) => { 
       console.log("Server received message and responded: " + message);
     });
 
-    connection
-      .start()
-      .then(() => {
-        console.log('Connection started');
-      })
-      .catch(err => console.log('Error while starting connection: ' + err));
+    connection.onreconnected(() => {
+      console.log("onreconnected");
+      this.connected = true;
+    });
+
+    connection.onclose(() => {
+      console.log("onconnected");
+      this.connected = false;
+    });
 
     this.connection = connection;
-    this.connected = true;
+
+    let connectionPromise = this.connection.start();
+    return connectionPromise;
 	}
 
-  async getUserByEmail(email) {
-    if (!this.connected)
-      return;
+  async getChats() {
+    return await this.connection.invoke("GetChatsAsync");
+  }
 
+  async getUserByEmail(email) {
     let result = await this.connection.invoke("GetUserByEmailAsync", email);
     console.log(result);
     return result;
+  }
+
+  async sendPersonalMessageAsync(email, messageText) {
+    let messageDto = {
+      text: messageText,
+      sentTimeUtc: new Date(),
+    }
+
+    console.log(messageDto);
+
+    this.connection.invoke("SendPersonalMessageAsync", email, messageDto);
   }
 }
 
