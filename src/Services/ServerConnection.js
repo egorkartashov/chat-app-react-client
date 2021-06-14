@@ -52,7 +52,30 @@ export class ServerConnection {
 	}
 
   async getChats() {
-    return await this.connection.invoke("GetChatsAsync");
+    let chatDtos = await this.connection.invoke("GetChatsAsync");
+    return chatDtos.map((chatDto, _) => 
+      {
+        return {
+          id: chatDto.id,
+          title: chatDto.name,
+          subtitle: chatDto.lastMessage 
+        }
+      }
+    );
+  }
+
+  async getChatMessages(chatId) {
+    let userInfo = AuthService.getUserInfo();
+    let messages = await this.connection.invoke("GetMessagesAsync", chatId);    
+
+    return messages.map((message, _) => {
+      return {
+        type: 'text',
+        position: message.senderEmail === userInfo.email ? 'right' : 'left',
+        text: message.text,
+        date: Date.parse(message.sentTimeUtc),
+      }
+    });
   }
 
   async getUserByEmail(email) {
@@ -61,7 +84,7 @@ export class ServerConnection {
     return result;
   }
 
-  async sendPersonalMessageAsync(email, messageText) {
+  async sendMessageByEmailAsync(email, messageText) {
     let messageDto = {
       text: messageText,
       sentTimeUtc: new Date(),
@@ -70,6 +93,14 @@ export class ServerConnection {
     console.log(messageDto);
 
     this.connection.invoke("SendPersonalMessageAsync", email, messageDto);
+  }
+
+  async sendMessageToChatAsync(chatId, messageDto) {
+    await this.connection.invoke("SendMessageToChatAsync", chatId, messageDto);
+  }
+
+  async createChatroomAsync(chatroomDto) {
+    await this.connection.invoke("CreateChatroomAsync", chatroomDto);
   }
 }
 

@@ -1,35 +1,37 @@
 import React from 'react';
-import ChatListItem from './ChatListItem.js';
+import ListGroup from 'react-bootstrap/ListGroup';
+import { ChatItem } from 'react-chat-elements';
 
 class ChatsList extends React.Component {
 
 	constructor(props) {
 		super(props);
-		
-		this.state = {
-			chats: [
-				{
-					key: ["Chatroom-123"],
-					name: "Первый чат",
-					type: "Chatroom",
-					lastMessage: "Hello!"
-				},
-				{
-					key: ["PersonalChat-123"],
-					name: "Второй чат",
-					type: "PersonalChat",
-					lastMessage: "123"
-				}
-			]
-		}
+
+		this.chatCardClicked = this.chatCardClicked.bind(this);
+	}
+
+	chatCardClicked(chatId) {
+		this.props.onChatClicked(chatId);
 	}
 
 	render() {
-		return <div>
-			{this.state.chats.map((value, _) => {
-				return <ChatListItem key={value.key} name={value.name} lastMessage={value.lastMessage}></ChatListItem>
+		return <ListGroup>
+			{this.props.chats.map((value, _) => {
+				return (
+				<ListGroup.Item 
+					action onClick={() => this.chatCardClicked(value.id)}
+					active={value.id.toString() === this.props.selectedChatId}
+				>
+					<ChatItem
+						title={value.name}
+						subtitle={value.lastMessage}
+						
+					>
+
+					</ChatItem>
+				</ListGroup.Item>);
 			})}
-		</div>
+		</ListGroup>
 	}
 }
 
