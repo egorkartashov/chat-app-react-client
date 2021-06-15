@@ -105,6 +105,10 @@ export class ServerConnection {
   async createChatroomAsync(chatroomDto) {
     await this.connection.invoke("CreateChatroomAsync", chatroomDto);
   }
+
+  async updateChatroomAsync(chatroomDto) {
+    await this.connection.invoke("UpdateChatroomAsync", chatroomDto);
+  }  
 }
 
 export const ServerConnectionContext = React.createContext(new ServerConnection(""));

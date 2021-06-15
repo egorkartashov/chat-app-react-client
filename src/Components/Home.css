@@ -13,3 +13,7 @@ ModalShownOnButtonClick {
 .row-height-100 {
 	height: 100%;
 }
+
+.chat-window {
+	width: 100%;
+}

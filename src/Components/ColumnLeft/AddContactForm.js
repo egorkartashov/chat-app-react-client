@@ -60,15 +60,22 @@ class AddContactForm extends React.Component {
 	}
 
 	handleSubmit(event) {
-		console.log("hanldeSubmit");
 		event.preventDefault();
 		const serverConnection = this.context.serverConnection;
 		serverConnection
 			.getUserByEmail(this.state.inputEmail)
 			.then((user) => {
-				console.log(`Found user by email ${this.state.inputEmail}: user = ${user}`);
-				if (user)
-					this.props.onAddContact(user, this.state.message);
+				if (!user) {
+					console.log(`Did not find user with email ${this.state.inputEmail}`);
+				}
+				else {
+					console.log(`Found user by email ${this.state.inputEmail}: user = ${user}`);	
+					if (this.props.onAddContact)
+						this.props.onAddContact(user, this.state.message);
+				}
+				
+				if (this.props.onClose)
+					this.props.onClose();
 			});
 	}
 }

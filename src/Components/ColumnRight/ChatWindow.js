@@ -9,6 +9,10 @@ import ChatWindowHeader from './ChatWindowHeader';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
+import ModalShownOnButtonClick from '../Common/ModalShownOnButtonClick';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ChatDetails from './ChatDetails';
+import { CHAT_TYPE_CHATROOM } from '../../Constants';
 
 class ChatWindow extends React.Component {
 
@@ -30,6 +34,7 @@ class ChatWindow extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		if (this.props.chat && this.props.chat.id !== prevProps.chat?.id) {
+			console.log(this.props.chat);
 			this.fetchMessages();
 		}
 	}
@@ -40,19 +45,41 @@ class ChatWindow extends React.Component {
 
 		return ( 
 			<div className="chat-window-container">
-        <Container className="vh-100 d-flex flex-column">
+        <Container fluid className="d-flex flex-column">
           <Row className="chat-window-header">
             <Col lg={9} className="chat-title">
               <ChatWindowHeader 
                 chat={this.props.chat}/>
             </Col>
-            <Col lg={3}>
-              <Button 
-                variant="light"
-                onClick={this.fetchMessages}
-              >
-                Обновить сообщения
-              </Button>
+						<Col lg={3}>
+							<ButtonGroup>
+								{
+									(this.props.chat.chatType !== CHAT_TYPE_CHATROOM)
+										? (
+											<></>
+										)
+										: (
+											<ModalShownOnButtonClick 
+												variant="light"
+												title={"Информация о чате"}
+												body={
+													<ChatDetails 
+														chat={this.props.chat}
+														onChatroomUpdated={this.props.onChatroomUpdated}/>
+												}
+											>
+												Информация о чате
+											</ModalShownOnButtonClick>
+										)
+								}
+								
+								<Button 
+									variant="light"
+									onClick={this.fetchMessages}
+								>
+									Обновить сообщения
+								</Button>
+							</ButtonGroup>
             </Col>
           </Row>
           <Row className="message-list-container">

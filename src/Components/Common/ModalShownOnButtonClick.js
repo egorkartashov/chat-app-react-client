@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import React from 'react';
 
 function ModalShownOnButtonClick(props) {
 	const [show, setShow] = useState(false);
@@ -8,9 +9,16 @@ function ModalShownOnButtonClick(props) {
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
 
+	let variant = props.variant ?? "primary";
+
+	let body = React.cloneElement(props.body,
+		{
+			onClose: handleClose
+		});
+
 	return (
 		<>
-			<Button variant="primary" onClick={handleShow}>
+			<Button variant={variant} onClick={handleShow}>
 				{props.children}
 			</Button>
 			<Modal show={show} onHide={handleClose}>
@@ -18,7 +26,7 @@ function ModalShownOnButtonClick(props) {
 					<Modal.Title>{props.title}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					{props.body}
+					{body}
 				</Modal.Body>
 			</Modal>
 		</>

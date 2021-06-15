@@ -5,8 +5,8 @@ import {
 } from "../Services/ServerConnection";
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import SidePanel from "./ChatsList/SidePanel";
-import ChatWindow from "./ChatDetails/ChatWindow";
+import SidePanel from "./ColumnLeft/SidePanel";
+import ChatWindow from "./ColumnRight/ChatWindow";
 
 class Home extends React.Component {
   state = {};
@@ -14,7 +14,7 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    const serverConnection = new ServerConnection("http://localhost:5000");
+    const serverConnection = new ServerConnection("http://localhost:5002");
 
     this.state = {
       serverConnection: serverConnection,
@@ -23,7 +23,8 @@ class Home extends React.Component {
     };
 
     this.handleAddContact = this.handleAddContact.bind(this);
-    this.handleCreateChat = this.handleCreateChat.bind(this);
+    this.handleChatroomCreated = this.handleChatroomCreated.bind(this);
+    this.handleChatroomUpdated = this.handleChatroomUpdated.bind(this);
     this.handleOnChatClicked = this.handleOnChatClicked.bind(this);
     this.fetchChats = this.fetchChats.bind(this);
     this.handleNewMessageReceived = this.handleNewMessageReceived.bind(this);
@@ -61,8 +62,13 @@ class Home extends React.Component {
       );
   }
 
-  handleCreateChat(newChat) {
+  handleChatroomCreated(newChat) {
     console.log(`handleCreateChat: ${newChat}`);
+    this.fetchChats();
+  }
+
+  handleChatroomUpdated(chat) {
+    console.log(`handleChatroomUpdated: ${chat.name}`);
     this.fetchChats();
   }
 
@@ -75,7 +81,14 @@ class Home extends React.Component {
     let serverConnection = this.state.serverConnection;
     serverConnection.getChats().then((chats) => {
       console.log("Received chats!");
-      this.setState({ chats: chats });
+      let selectedChat = this.state.chat;
+      if (selectedChat && chats.every(c => c.id !== selectedChat.id))
+        selectedChat = null;
+      
+      this.setState({
+        chat: selectedChat,
+        chats: chats 
+      });
     });
   }
 
@@ -88,20 +101,21 @@ class Home extends React.Component {
       <ServerConnectionContext.Provider value={serverConnectionContextValue}>
         <Container fluid className="main-container">
           <Row className="row-height-100">
-            <Col lg={4}>
+            <Col lg={3}>
 							<SidePanel 
                 selectedChatId={this.state.selectedChat?.id}
 								chats={this.state.chats}
 								onChatClicked={this.handleOnChatClicked}
                 onAddContact={this.handleAddContact}
-                onNewChatroomCreated={this.handleCreateChat}
+                onNewChatroomCreated={this.handleChatroomCreated}
                 className="sidepanel"
 							/>
 						</Col>
-            <Col lg={8}>
+            <Col lg={9} className="d-flex">
               <ChatWindow
                 className="chat-window"
                 chat={this.state.selectedChat}
+                onChatroomUpdated={this.handleChatroomUpdated}
               >
               </ChatWindow>
             </Col>

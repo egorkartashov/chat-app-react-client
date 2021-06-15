@@ -1,16 +1,30 @@
 import { Component } from 'react';
 import Row from 'react-bootstrap/Row';
-import ModalShownOnButtonClick from './../Common/ModalShownOnButtonClick';
+import ModalShownOnButtonClick from '../Common/ModalShownOnButtonClick';
 import AddContactForm from './AddContactForm';
-import CreateChatForm from './CreateChatForm';
+import ChatDetails from '../ColumnRight/ChatDetails';
 import Col from 'react-bootstrap/Col';
 import PersonPlus from '../../Assets/person-plus.svg';
 import CreateChatIcon from '../../Assets/chat-icon.svg';
 import { ChatList } from 'react-chat-elements';
-import ChatIcon from '../../Assets/chat-left-dots.svg';
+import ChatroomIcon from '../../Assets/people.svg';
 
 class SidePanel extends Component {
   state = {};
+
+  mapChatDtoToChatItem(chatDto) {
+    console.log(chatDto);
+    let imageUrl = chatDto.imageUrl ?? ChatroomIcon;
+    
+    return { 
+      id: chatDto.id,
+      title: chatDto.name,
+      subtitle: chatDto.lastMessage,
+      date: Date.parse(chatDto.lastMessageTime),
+      avatar: imageUrl
+    };
+  }
+
   render() {
 
     return (
@@ -30,26 +44,19 @@ class SidePanel extends Component {
           <ModalShownOnButtonClick
             title="Новый чат"
             body={
-              <CreateChatForm
+              <ChatDetails
                 onNewChatroomCreated={this.props.onNewChatroomCreated}
-              ></CreateChatForm>
+              ></ChatDetails>
             }
           >
-						<img src={CreateChatIcon} /> 
+						<img src={CreateChatIcon} />
           </ModalShownOnButtonClick>
         </Row>
         <Row>
           <Col>
             <ChatList 
               onClick={this.props.onChatClicked}
-              dataSource={this.props.chats.map(chatDto => 
-                ({ 
-                  id: chatDto.id,
-                  title: chatDto.name,
-                  subtitle: chatDto.lastMessage,
-                  date: Date.parse(chatDto.lastMessageTime),
-                  avatar: ChatIcon
-                }))}
+              dataSource={this.props.chats.map(this.mapChatDtoToChatItem)}
             />
           </Col>
         </Row>
