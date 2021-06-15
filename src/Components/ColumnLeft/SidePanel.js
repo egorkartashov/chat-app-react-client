@@ -13,7 +13,6 @@ class SidePanel extends Component {
   state = {};
 
   mapChatDtoToChatItem(chatDto) {
-    console.log(chatDto);
     let imageUrl = chatDto.imageUrl ?? ChatroomIcon;
     
     return { 
