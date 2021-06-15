@@ -14,12 +14,12 @@ export class ServerConnection {
   }
 
   isConnected() {
-    return this.connection !== undefined && this.connection.connected;
+    return this.connection && this.connection.connected;
   }
 
 	async connect() {
 		const accessToken = AuthService.getAccessToken();
-    if (accessToken === "") {
+    if (!accessToken) {
       console.log("Access token not found");
       return;
     }
@@ -42,7 +42,7 @@ export class ServerConnection {
 
     connection.on("NotifyNewMessagePostedAsync", (chatId, message) => { 
       console.log(`New message notification received: chatId = ${chatId}, message = ${JSON.stringify(message)}`);
-      if (this.onNewMessageReceived !== null)
+      if (this.onNewMessageReceived)
         this.onNewMessageReceived(chatId, message);
     });
 
@@ -63,16 +63,7 @@ export class ServerConnection {
 	}
 
   async getChats() {
-    let chatDtos = await this.connection.invoke("GetChatsAsync");
-    return chatDtos.map((chatDto, _) => 
-      {
-        return {
-          id: chatDto.id,
-          title: chatDto.name,
-          subtitle: chatDto.lastMessage 
-        }
-      }
-    );
+    return await this.connection.invoke("GetChatsAsync");
   }
 
   async getChatMessages(chatId) {

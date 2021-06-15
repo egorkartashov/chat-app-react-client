@@ -9,7 +9,7 @@ export default class AuthService {
 
   static getAccessToken() {
     let authToken = localStorage.getItem("authToken");
-    return authToken ?? "";
+    return authToken;
   }
 
   static getUserInfo() {

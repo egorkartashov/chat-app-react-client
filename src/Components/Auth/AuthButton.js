@@ -22,9 +22,9 @@ function AuthButton() {
 
 		let userInfoJson = JSON.stringify(userInfo);
 		localStorage.setItem("userInfo", userInfoJson);
-		setIsLoggedIn(true);
 		
 		history.push("/home");
+		setIsLoggedIn(true);
 	}
 
 	function handleFailure (response) {

@@ -39,7 +39,7 @@ class CreateChatForm extends React.Component {
 		let serverConnection = this.context.serverConnection;
 		serverConnection.getUserByEmail(email)
 			.then(user => {
-				if (user === null) {
+				if (!user) {
 					console.log("user was not found");
 					return;
 				}

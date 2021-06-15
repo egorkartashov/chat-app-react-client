@@ -12,6 +12,7 @@ import ChatIcon from '../../Assets/chat-left-dots.svg';
 class SidePanel extends Component {
   state = {};
   render() {
+
     return (
       <div>
         <Row className="justify-space-between">
@@ -40,8 +41,15 @@ class SidePanel extends Component {
         <Row>
           <Col>
             <ChatList 
-              dataSource={this.props.chats.map(chat => ({ ...chat, avatar: ChatIcon}))}
               onClick={this.props.onChatClicked}
+              dataSource={this.props.chats.map(chatDto => 
+                ({ 
+                  id: chatDto.id,
+                  title: chatDto.name,
+                  subtitle: chatDto.lastMessage,
+                  date: Date.parse(chatDto.lastMessageTime),
+                  avatar: ChatIcon
+                }))}
             />
           </Col>
         </Row>

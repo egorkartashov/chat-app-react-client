@@ -5,6 +5,10 @@ import { ServerConnectionContext } from "../../Services/ServerConnection";
 import { Input } from 'react-chat-elements';
 import { Button as SendButton } from 'react-chat-elements';
 import Button from 'react-bootstrap/Button';
+import ChatWindowHeader from './ChatWindowHeader';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Container from 'react-bootstrap/Container';
 
 class ChatWindow extends React.Component {
 
@@ -25,48 +29,60 @@ class ChatWindow extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (this.props.selectedChatId !== prevProps.selectedChatId) {
+		if (this.props.chat && this.props.chat.id !== prevProps.chat?.id) {
 			this.fetchMessages();
 		}
 	}
 
 	render() {
+    if (!this.props.chat)
+      return <div>Не выбран чат</div>;
 
 		return ( 
 			<div className="chat-window-container">
-				<div className="refresh-messages-button">
-					<Button 
-						variant="light"
-						onClick={this.fetchMessages}
-					>
-						Обновить сообщения
-					</Button>
-				</div>
-				<div className="message-list-container">
-					<MessageList 
-						dataSource={this.state.messages}
-					/>
-				</div>
-				<div className="message-input-container">
-					<Input
-						ref={this.inputMessage}
-						placeholder="New message..."
-						onChange={this.handleOnChange}
-						rightButtons={
-							<SendButton
-								color="white"
-								backgroundColor="black"
-								text="Send"
-								onClick={this.handleSendMessage}
-								 />}
-						/>
-				</div>
+        <Container className="vh-100 d-flex flex-column">
+          <Row className="chat-window-header">
+            <Col lg={9} className="chat-title">
+              <ChatWindowHeader 
+                chat={this.props.chat}/>
+            </Col>
+            <Col lg={3}>
+              <Button 
+                variant="light"
+                onClick={this.fetchMessages}
+              >
+                Обновить сообщения
+              </Button>
+            </Col>
+          </Row>
+          <Row className="message-list-container">
+            <Col className="w-100">
+              <MessageList 
+                toBottomHeight={'100%'}
+                dataSource={this.state.messages}
+              />
+            </Col>
+          </Row>
+          <Row className="message-input-container">
+            <Input
+              ref={this.inputMessage}
+              placeholder="New message..."
+              onChange={this.handleOnChange}
+              rightButtons={
+                <SendButton
+                  color="white"
+                  backgroundColor="black"
+                  text="Send"
+                  onClick={this.handleSendMessage}
+                  />}
+              />
+          </Row>
+        </Container>
 			</div>
 		 );
 	}
 
 	handleOnChange(event) {
-		console.log("handleOnChange");
 		this.setState({inputMessage: event.target.value});
 	}
 
@@ -79,7 +95,7 @@ class ChatWindow extends React.Component {
 			sentTimeUtc: new Date(),
 		}
 
-		let selectedChatId = this.props.selectedChatId;
+		let selectedChatId = this.props.chat.id;
 		serverConnection.sendMessageToChatAsync(selectedChatId, message)
 			.then(_ => {
 				console.log(`ChatWindow: Sent message ${this.state.inputMessage} to chat ${selectedChatId}`);
@@ -91,10 +107,10 @@ class ChatWindow extends React.Component {
 	}
 
 	fetchMessages() {
-		if (this.props.selectedChatId === undefined)
+		if (!this.props.chat)
 			return;
 
-		let selectedChatId = this.props.selectedChatId;
+		let selectedChatId = this.props.chat.id;
 		
 		const serverConnection = this.context.serverConnection;
 		serverConnection.getChatMessages(selectedChatId)

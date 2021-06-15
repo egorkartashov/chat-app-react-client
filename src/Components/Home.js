@@ -14,12 +14,12 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    const serverConnection = new ServerConnection("http://localhost:5002");
+    const serverConnection = new ServerConnection("http://localhost:5000");
 
     this.state = {
       serverConnection: serverConnection,
       chats: [],
-      selectedChatId: null
+      selectedChat: null
     };
 
     this.handleAddContact = this.handleAddContact.bind(this);
@@ -40,9 +40,10 @@ class Home extends React.Component {
 
   handleNewMessageReceived(chatId, message) {
     this.fetchChats();
-    if (this.state.selectedChatId === chatId) {
-      this.setState({selectedChatId: undefined});
-      this.setState({selectedChatId: chatId});
+    if (this.state.selectedChat.id === chatId) {
+      let selectedChat = this.state.selectedChat;
+      this.setState({selectedChat: null});
+      this.setState({selectedChat: selectedChat});
     }
   }
 
@@ -65,8 +66,9 @@ class Home extends React.Component {
     this.fetchChats();
   }
 
-  handleOnChatClicked(chat) {
-    this.setState({selectedChatId: chat.id});
+  handleOnChatClicked(chatItem) {
+    let selectedChat = this.state.chats.find(chat => chat.id === chatItem.id);
+    this.setState({selectedChat: selectedChat});
   }
 
   fetchChats() {
@@ -88,7 +90,7 @@ class Home extends React.Component {
           <Row className="row-height-100">
             <Col lg={4}>
 							<SidePanel 
-                selectedChatId={this.state.selectedChatId}
+                selectedChatId={this.state.selectedChat?.id}
 								chats={this.state.chats}
 								onChatClicked={this.handleOnChatClicked}
                 onAddContact={this.handleAddContact}
@@ -99,7 +101,7 @@ class Home extends React.Component {
             <Col lg={8}>
               <ChatWindow
                 className="chat-window"
-                selectedChatId={this.state.selectedChatId}
+                chat={this.state.selectedChat}
               >
               </ChatWindow>
             </Col>

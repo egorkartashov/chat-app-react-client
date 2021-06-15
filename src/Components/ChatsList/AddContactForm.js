@@ -67,7 +67,7 @@ class AddContactForm extends React.Component {
 			.getUserByEmail(this.state.inputEmail)
 			.then((user) => {
 				console.log(`Found user by email ${this.state.inputEmail}: user = ${user}`);
-				if (user !== undefined)
+				if (user)
 					this.props.onAddContact(user, this.state.message);
 			});
 	}
